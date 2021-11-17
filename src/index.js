@@ -3,11 +3,22 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {BrowserRouter as Router,Switch,Route} from 'react-router-dom'
+import DetailView from './detailview'
+
+const ErrorPage =()=>(
+<h1>not found</h1>
+)
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Router>
+  <Switch>
+    <Route exact path="/" component={App} />
+    <Route exact path="/detail" component={()=><DetailView/>} />
+    <Route exact path="/*" component={ErrorPage} />
+   
+    </Switch>
+    </Router>,
   document.getElementById('root')
 );
 

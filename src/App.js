@@ -1,11 +1,13 @@
 import logo from './logo.svg';
 import './App.css';
-import React ,{Link} from 'react'
+import React from 'react'
 // import 'semantic.min.css'
-
+import { Link ,useHistory} from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css'
-import {Card, Grid, Icon, Image,Container,Search ,Dropdown} from 'semantic-ui-react'
-import DetailView from './detailview';
+import {Card, Grid,Dimmer,Loader, Image,Container,Search ,Dropdown} from 'semantic-ui-react'
+// import DetailView from './detailview';
+
+
 class App extends React.Component{
   constructor(props){
     super(props);
@@ -15,35 +17,11 @@ class App extends React.Component{
           searchResultArray : [],
           isSearching : false,
           listOfRegions : [],
+          isLoading : true
     }
 
-    this.countryOptions = [
-      { key: 'af', value: 'af', flag: 'af', text: 'Afghanistan' },
-      { key: 'ax', value: 'ax', flag: 'ax', text: 'Aland Islands' },
-      { key: 'al', value: 'al', flag: 'al', text: 'Albania' },
-      { key: 'dz', value: 'dz', flag: 'dz', text: 'Algeria' },
-      { key: 'as', value: 'as', flag: 'as', text: 'American Samoa' },
-      { key: 'ad', value: 'ad', flag: 'ad', text: 'Andorra' },
-      { key: 'ao', value: 'ao', flag: 'ao', text: 'Angola' },
-      { key: 'ai', value: 'ai', flag: 'ai', text: 'Anguilla' },
-      { key: 'ag', value: 'ag', flag: 'ag', text: 'Antigua' },
-      { key: 'ar', value: 'ar', flag: 'ar', text: 'Argentina' },
-      { key: 'am', value: 'am', flag: 'am', text: 'Armenia' },
-      { key: 'aw', value: 'aw', flag: 'aw', text: 'Aruba' },
-      { key: 'au', value: 'au', flag: 'au', text: 'Australia' },
-      { key: 'at', value: 'at', flag: 'at', text: 'Austria' },
-      { key: 'az', value: 'az', flag: 'az', text: 'Azerbaijan' },
-      { key: 'bs', value: 'bs', flag: 'bs', text: 'Bahamas' },
-      { key: 'bh', value: 'bh', flag: 'bh', text: 'Bahrain' },
-      { key: 'bd', value: 'bd', flag: 'bd', text: 'Bangladesh' },
-      { key: 'bb', value: 'bb', flag: 'bb', text: 'Barbados' },
-      { key: 'by', value: 'by', flag: 'by', text: 'Belarus' },
-      { key: 'be', value: 'be', flag: 'be', text: 'Belgium' },
-      { key: 'bz', value: 'bz', flag: 'bz', text: 'Belize' },
-      { key: 'bj', value: 'bj', flag: 'bj', text: 'Benin' },
-    ]
- 
-   let  media = 'kumar'
+    
+
   }
 
    async componentDidMount(){
@@ -64,10 +42,13 @@ class App extends React.Component{
         })
         this.setState({
           data : data,
-          listOfRegions : listOfRegions
+          listOfRegions : listOfRegions,
+          isLoading : false
         })
         
-         } )
+         } ).catch(e=>{
+
+         })
          console.log(listOfRegions)
 
          
@@ -101,9 +82,9 @@ class App extends React.Component{
       dataArraytobeShown = this.state.searchResultArray
     }
     return (
-      <Container>
-
-      <Search
+      <Container fluid>
+       
+      <Search style={{ display :'inline' }}
           loading={this.state.isSearching}
           onResultSelect={(e, data) =>{
             console.log(data); }
@@ -114,29 +95,43 @@ class App extends React.Component{
          // results={results}
           value={this.state.onsearchvalue}
         />
-      <Dropdown
+        
+          
+      <Dropdown 
          placeholder='Select Region'
          onChange={(e,{value})=>{   this.setState({ onsearchvalue : value , isSearching : true });this.setResult(value,true)  }}
           search
        selection
         options={this.state.listOfRegions}
      />
-      <Grid relaxed  style={{ margin  : 10  }}>
-      <Grid.Row columns={4} fluids>
+     
+
+
+      { this.state.isLoading ?
+           <Dimmer active>
+           <Loader  />
+         </Dimmer>
+        :      
+
+      <Grid relaxed fluid stackable mobile={16} columns={3} divided style={{ margin  : 10  }}>
+      {/* <Grid.Row   fluid> */}
       { dataArraytobeShown.map(ele=>(
-       <Grid.Column key={ele.name}>
-         
-      <Card key={ele}  >
-      <Image src={ele.flags.png} wrapped ui={false} />
-      <Card.Content>
+
+       <Grid.Column key={ele.name} fluid>
+
+      <Link to={{ pathname: '/detail', state:{...ele} }} >
+      <Card key={ele} >
+      <Image src={ele.flags.png} />
+      <Card.Content fluid>
         <Card.Header>{ele.name}</Card.Header>
         <Card.Description>
           Population:{ele.population}<br/>
           Region :{ele.region} <br/>
-          Capital : {ele.capital}
+         Capital : {ele.capital}
         </Card.Description>
       </Card.Content>
     </Card>
+    </Link>
   
     </Grid.Column>
    
@@ -146,8 +141,11 @@ class App extends React.Component{
     
       )) }
       
-      </Grid.Row>
+      {/* </Grid.Row> */}
       </Grid>
+
+      }
+      
       </Container>
     )
 
